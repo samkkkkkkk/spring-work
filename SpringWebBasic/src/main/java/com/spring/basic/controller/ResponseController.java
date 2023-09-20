@@ -27,7 +27,7 @@ public class ResponseController {
 	public void test(int age, Model model) {
 		model.addAttribute("age", age);
 		model.addAttribute("nick", "멍멍이");
-
+	
 	}
 	 */
 
@@ -48,8 +48,8 @@ public class ResponseController {
 	
 	//3. ModelAndView 객체를 활용한 처리
 	//데이터를 view 템플릿으로 전달하는 model의 역할과, 
-	//사용자에게 응답하고자 하는 페이지를 지정하는 역학을 동시에 진행할 수 있다.
-	@GetMapping("test3")
+	//사용자에게 응답하고자 하는 페이지를 지정하는 역할을 동시에 진행할 수 있다.
+	@GetMapping("/test3")
 	public ModelAndView test3() {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("userName", "김철수");

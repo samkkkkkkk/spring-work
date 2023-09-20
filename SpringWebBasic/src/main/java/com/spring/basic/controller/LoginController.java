@@ -48,7 +48,6 @@ public class LoginController {
 			}
 		}else {
 			result = "f-id";
-			
 		}
 		model.addAttribute("result", result);
 		return "/response/s-result";

@@ -73,15 +73,17 @@
     
     <script>
     	
-    	const coffeePrice = {
+    	/* const coffeePrice = {
     			americano: 3000,
     			cafeLatte: 4500,
     			macchiato: 5000
-    	};
+    	}; */
+    	
     	
     	// change: input이나 select 태그의 값이 변했을 때
     	//$를 붙이면 요소를 사욯함을 뜻하는 관례
     	const $menu = document.getElementById('menu-sel');
+    	
     	$menu.onchange = e => {
     		//커피를 선택하면 가격이 변해야 함!
     		//console.log('이벤트 타겟: ', e.target.value);
@@ -94,7 +96,7 @@
     		$priceTag.value = price;
     	}
     	
-    
+       
     </script>
 	
 </body>

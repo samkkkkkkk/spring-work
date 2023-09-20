@@ -28,9 +28,9 @@ public class Score {
 	private int kor, eng, math; //국, 영, 수 점수
 	
 	private int stuNum; //학번
-	private int total;// 총점
+	private int total; // 총점
 	private double average; //평균
-	private Grade grade;//학점
+	private Grade grade; //학점
 	
 	public Score(ScoreRequestDTO dto) {
 		this.stuName = dto.getName();
