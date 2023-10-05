@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.imageio.spi.ServiceRegistry;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.spring.basic.score.dto.ScoreListResponseDTO;
@@ -17,10 +19,15 @@ import lombok.RequiredArgsConstructor;
 //컨트롤러와 레파지토리 사이에 배치되어 기타 비즈니스 로직 처리
 //ex) 값을 가공, 예외 처리, dto로 변환, 트랜젝션 등등...
 @Service //빈 등록
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class ScoreService {
 	
 	private final IScoreRepository scoreRepository;
+	
+	@Autowired
+	public ScoreService(@Qualifier("jdbc") IScoreRepository scoreRepository) {
+		this.scoreRepository = scoreRepository;
+	}
 	
 	//등록 중간처리
 	//컨트롤러는 나에게 DTO를 줬어.
@@ -41,13 +48,12 @@ public class ScoreService {
 	
 	public List<ScoreListResponseDTO> getlist() {
 		List<ScoreListResponseDTO> dtoList = new ArrayList<>(); 
-		List<Score> scoreList = scoreRepository.findAll();
+		List<Score> scoreList = scoreRepository.findAll(); 
 		for(Score s : scoreList) {
 			ScoreListResponseDTO dto = new ScoreListResponseDTO(s); // Entity를 DTO로 변환
 			dtoList.add(dto); //변환한 DTO를 DTO List에 추가
 		}
-		
-		
+				
 		return dtoList;
 		
 	}
@@ -75,9 +81,7 @@ public class ScoreService {
 		score.changeScore(dto);
 		
 		scoreRepository.modify(score);
-		
-		
-		
+
 	}
 	
 }

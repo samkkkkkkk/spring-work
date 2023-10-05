@@ -60,7 +60,6 @@ public class ScoreRepositoryImpl implements IScoreRepository {
 	@Override
 	public void deleteByStuNum(int stuNum) {
 		SCORE_MAP.remove(stuNum);
-		
 	}
 	
 	
@@ -68,5 +67,6 @@ public class ScoreRepositoryImpl implements IScoreRepository {
 	public void modify(Score modScore) {
 		SCORE_MAP.put(modScore.getStuNum(), modScore);
 	}
+	
 
 }

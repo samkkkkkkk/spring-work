@@ -21,8 +21,5 @@ public class UserVO {
 	private String userPw;
 	private String userName;
 	private List<String> hobby;
-	
-	
-	
-	
+
 }

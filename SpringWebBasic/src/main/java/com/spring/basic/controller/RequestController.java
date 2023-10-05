@@ -55,17 +55,18 @@ public class RequestController {
 	public String basicPost() {
 		System.out.println("/basic01 요청이 들어옴!: POST 방식!");
 		return "request/req-ex01";
-	}
-	
+	}		
 	
 	////////////////////////////////////////////////////////////////////////////
 	
 	//컨트롤러 내의 메서드 타입을 void로 선언하면
 	//요청이 들어온 URL 값을 뷰 리졸버에게 전달합니다.
+	
 	@GetMapping("/join")
 	public void register() {
 		System.out.println("/request/join: GET");
 	}
+	
 	
 	//요청 URI 주소가 같더라도, 전송 방식에 따라 맵핑을 다르게 하기 때문에
 	//같은 주소를 사용하는 것이 가능합니다. (GET -> 화면처리, POST -> 입력값 처리)
@@ -79,7 +80,7 @@ public class RequestController {
 	 
 	@PostMapping("/join")
 	public void register(HttpServletRequest request) {
-		System.out.println("/requset/join: POST");
+		System.out.println("/request/join: POST");
 		
 		System.out.println("ID: " + request.getParameter("userId"));
 		System.out.println("PW: " + request.getParameter("userPw"));
@@ -106,6 +107,7 @@ public class RequestController {
 	}
 	*/
 	
+	
 	/*
 	 3. 커멘드 객체를 활용한 파라미터 처리
 	 - 파라미터 데이터와 연동되는 VO 클래스가 필요합니다.
@@ -115,12 +117,11 @@ public class RequestController {
 	 수행할 수 있음 (VO 보다는 역할이 좀 더 많고, 특정 목적을 가진 객체)
 	 */
 	
+	
 	@PostMapping("/join")
 	public void register(UserVO vo) {
 		System.out.println(vo);
 	}
-	
-	
-	
+
 	
 }
