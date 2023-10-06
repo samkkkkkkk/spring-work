@@ -35,7 +35,6 @@ public class ScoreJdbcRepository implements IScoreRepository {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -79,9 +78,7 @@ public class ScoreJdbcRepository implements IScoreRepository {
 						);
 				scoreList.add(s);
 			}
-			
-			
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -124,7 +121,6 @@ public class ScoreJdbcRepository implements IScoreRepository {
 			pstmt.setDouble(6, score.getAverage());
 			pstmt.setString(7, String.valueOf(score.getGrade()));
 			
-			
 			//5. sql을 다 완성했다면, pstmt에게 sql을 실행하라는 명령을 내립니다.
 			int rn = pstmt.executeUpdate(); //리턴 타입이 int -> sql 실행 성공시 1, 실패 시 0
 			if(rn == 1) {
@@ -149,21 +145,24 @@ public class ScoreJdbcRepository implements IScoreRepository {
 
 	@Override
 	public Score findeByStuNum(int stuNum) {
-		// TODO Auto-generated method stub
-		return null;
+		
+			return null;
 	}
 
 	@Override
 	public void deleteByStuNum(int stuNum) {
+		
+		//1. sql을 문자열로 준비해 주세요
+		//변수 또는 객체에 들어있는 값으로 sql을 완성해야 한다면, 해당 자리에 ?를 찍어 주세요.
+		String sql = "DELETE FROM score "
+					+"WHERE stu_num = ?";
 		try {
 			
-			//1. sql을 문자열로 준비해 주세요
-			//변수 또는 객체에 들어있는 값으로 sql을 완성해야 한다면, 해당 자리에 ?를 찍어 주세요.
-			String sql = "DELETE FROM score "
-						+"WHERE stu_num = ?";
+			
 			//2. 데이터베이스에 접속을 담당하는 Connection 객체를 메서드를 통해 받아옵니다.
 			//접속 정보를 함께 전달합니다.
 			conn = DriverManager.getConnection(url, username, password);
+			conn.setAutoCommit(false); //오토커밋 취소
 			//3. 접속을 할 수 있게 됐으니, SQL을 실행할 수 있는 PreparedStatement를 받아옵시다.
 			//직접 생성하지 않고, 메서도를 통해 받아옵니다.
 			
@@ -176,6 +175,7 @@ public class ScoreJdbcRepository implements IScoreRepository {
 			int rn = pstmt.executeUpdate(); //리턴 타입이 int -> sql 실행 성공시 1, 실패 시 0
 			if(rn == 1) {
 				System.out.println("DELETE 성공!");
+				conn.commit();
 			}else {
 				System.out.println("DELETE 실패!");
 			}
@@ -192,7 +192,7 @@ public class ScoreJdbcRepository implements IScoreRepository {
 		}
 	
 	}
-
+	
 	@Override
 	public void modify(Score modScore) {
 		
