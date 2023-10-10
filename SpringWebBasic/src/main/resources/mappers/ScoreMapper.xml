@@ -30,11 +30,11 @@
      
      <!-- 점수 삭제 기능! -->
  	<delete id="deleteByStuNum">
- 		DELETE FROM score WHERE stu_num = #{stuNum}
+ 		DELETE FROM score 
+ 		WHERE stu_num = #{stuNum}
  	</delete>
  	
  	<!-- 점수 상세 정보 -->
- 	
  	<select id="findeByStuNum" resultMap="scoreMap">
  		SELECT * FROM score
  		WHERE stu_num = #{stuNum}
@@ -49,10 +49,5 @@
  	</update>
 	
  </mapper>
-
-
-
-
-
 
 

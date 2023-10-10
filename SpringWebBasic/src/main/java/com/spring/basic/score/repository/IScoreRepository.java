@@ -24,6 +24,4 @@ public interface IScoreRepository {
 
 	void modify(Score modScore);
 	
-	
-	
 }
