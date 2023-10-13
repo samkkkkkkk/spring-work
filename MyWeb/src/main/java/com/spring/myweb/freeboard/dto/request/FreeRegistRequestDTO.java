@@ -1,6 +1,4 @@
-package com.spring.myweb.freeboard.dto;
-
-import com.spring.myweb.freeboard.entity.FreeBoard;
+package com.spring.myweb.freeboard.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -9,17 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @Getter @Setter
-@ToString
-@EqualsAndHashCode
+@ToString @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class FreeModifyDto {
-
-	private int bno;
-	private String writer;
+public class FreeRegistRequestDTO {
+	
 	private String title;
 	private String content;
+	private String writer;
 	
 }
