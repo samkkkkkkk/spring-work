@@ -29,7 +29,7 @@
 		</if>        
 		
      </sql>
-	
+     
 	<insert id="regist">
 		INSERT INTO freeboard
 		(bno, title, writer, content)

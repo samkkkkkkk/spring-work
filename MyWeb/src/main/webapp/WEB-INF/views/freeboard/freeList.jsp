@@ -27,8 +27,6 @@
                             <option value="titleContent" ${pc.page.condition == 'titleContent' ? 'selected' : ''}>제목+내용</option>
                        </select>
                     </div>
-
-                    
 		    </form>
                    
                     <table class="table table-bordered">
@@ -44,7 +42,7 @@
                         	<c:forEach var="vo" items="${boardList}">
 	                            <tr>
 	                                <td>${vo.bno}</td>
-	                                <td><a href="/myweb/freeboard/content?bno=${vo.bno}&pageNo=${pc.page.pageNo}&amount=${pc.page.amount}&keyword=${pc.page.keyword}&condition=${pc.page.keyword}">${vo.title}</a></td>
+	                                <td><a href="/myweb/freeboard/content?bno=${vo.bno}&pageNo=${pc.page.pageNo}&amount=${pc.page.amount}&keyword=${pc.page.keyword}&condition=${pc.page.condition}">${vo.title}</a></td>
 	                                <td>${vo.writer}</td>
 	                                <td>${vo.date}</td>
 	                            </tr>
@@ -52,7 +50,6 @@
                         </tbody>
                         
                     </table>
-
 
                     <!--페이지 네이션을 가져옴-->
 		    <form action="/myweb/freeboard/freeList" name="pageForm">
@@ -114,7 +111,6 @@
                 document.pageForm.submit();
 
             });
-
 
             const msg = '${msg}';
             if(msg == 'searchFail'){

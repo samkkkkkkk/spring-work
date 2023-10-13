@@ -29,7 +29,6 @@ public class FreeBoardService implements IFreeBoardService {
 				.writer(dto.getWriter())
 				.content(dto.getContent())
 				.build());
-		
 	}
 
 	@Override
@@ -44,7 +43,6 @@ public class FreeBoardService implements IFreeBoardService {
 	
 	@Override
 	public int getTotal(Page page) {
-		
 		return mapper.getTotal(page);
 	}
 	
@@ -67,6 +65,5 @@ public class FreeBoardService implements IFreeBoardService {
 		mapper.delete(bno);
 	}
 
-	
 
 }

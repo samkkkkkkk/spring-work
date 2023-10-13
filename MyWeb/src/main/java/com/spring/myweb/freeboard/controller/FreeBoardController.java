@@ -53,7 +53,7 @@ public class FreeBoardController {
 	}
 	
 	//글 등록 처리
-	@PostMapping("freeRegist")
+	@PostMapping("/freeRegist")
 	public String regist(FreeRegistRequestDTO dto) {
 		service.regist(dto);
 		return "redirect:/freeboard/freeList";
