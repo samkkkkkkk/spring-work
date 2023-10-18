@@ -9,7 +9,7 @@
                     <div class="titlebox">
                         로그인
                     </div>
-                    <form action="/myweb/user/userlogin" method="post" name="loginForm">
+                    <form  method="post" name="loginForm">
                         <div class="form-group"><!--사용자클래스선언-->
                             <label for="id">아이디</label>
                             <input type="text" name="userId" class="form-control" id="id" placeholder="아이디">
@@ -36,6 +36,8 @@
     const msg = '${msg}';
     if(msg === 'joinSucess') {
     	alert('회원 가입을 환영합니다!');
+    } else if(msg === 'loginFail') {
+    	alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.');
     }
     
     
@@ -53,22 +55,22 @@
         //     document.loginFrom.submit();
         // }
 
-        if(document.loginFrom.userId.value === ''){
+        if(document.loginForm.userId.value === ''){
             alert('아이디를 작성해주세요!')
             return;
         }
-        if(document.loginFrom.userPw.value === ''){
+        if(document.loginForm.userPw.value === ''){
             alert('비밀번호를 작성해주세요')
             return;
         }
 
-        document.loginFrom.submit();
+        document.loginForm.submit();
 
 
     }
 
     document.getElementById('joinBtn').onclick = () => {
-        location.href='/myweb/user/userLoin';
+        location.href='${pageContext.request.contextPath}/user/userJoin';
     }
     
    
