@@ -134,6 +134,7 @@
                     return;
                 }
 
+                
                 //요청에 관련된 정보 객체
                 const reqObj = {
                     method: 'post' ,
@@ -147,6 +148,7 @@
                         'replyPw' : replyPw
                     })
                 };
+                             
 
                 fetch('${pageContext.request.contextPath}/reply', reqObj)
                     .then(res => res.text())
@@ -156,7 +158,7 @@
                         document.getElementById('reply').value = '';
                         document.getElementById('replyId').value = '';
                         document.getElementById('replyPw').value = '';
-                        //등록 완료 후 댓글 목록 함수를 호출해서 비동기실으로 목록 표현.
+                        //등록 완료 후 댓글 목록 함수를 호출해서 비동기식으로 목록 표현.
                         getList(1, true);
                     });
 
@@ -168,7 +170,6 @@
                 //더보기니까 -> 누적해서 보여줘야 하니까 -> 초기화 하면 안됨!
                 getList(++page, false);
             }
-
 
             let page = 1; //전역의 의미로 사용할 페이지 번호.
             let strAdd = ''; //화면에 그려넣을 태그를 문자열의 형태로 추가할 변수.
@@ -207,7 +208,7 @@
                         }
                         page = 1;
                     }
-
+                    
                 function getList(pageNum, reset){
                     console.log('getList() 호출됨!');
                     strAdd = '';
@@ -290,7 +291,7 @@
             그러다 보니 이벤트가 등록되는 시점보다 fetch 함수의 실행이 먼저 끝날 것이라는
             보장이 없기 때문에 해당 방식은 이벤트 등록이 불가능합니다.
             이 때는 이미 실제로 존재하는 #replyList에 이벤트를 등록하고, 이벤트를 자식에게 위임하여
-            사용하는 addEventListener를 통해 처이해야 합니다.
+            사용하는 addEventListener를 통해 처리해야 합니다.
             */
 
             document.getElementById('replyList').addEventListener('click', e => {

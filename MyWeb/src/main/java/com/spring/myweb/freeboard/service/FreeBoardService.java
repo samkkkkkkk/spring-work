@@ -3,6 +3,7 @@ package com.spring.myweb.freeboard.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.myweb.freeboard.dto.page.Page;
@@ -59,7 +60,7 @@ public class FreeBoardService implements IFreeBoardService {
 								.bno(dto.getBno())
 								.build());
 	}
-
+	
 	@Override
 	public void delete(int bno) {
 		mapper.delete(bno);
