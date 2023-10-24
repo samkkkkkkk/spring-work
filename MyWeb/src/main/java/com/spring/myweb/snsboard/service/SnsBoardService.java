@@ -6,14 +6,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.spring.myweb.freeboard.dto.page.Page;
-import com.spring.myweb.snsboard.dto.SnsBoardRequsetDTO;
-import com.spring.myweb.snsboard.dto.SnsboardResponseDTO;
+import com.spring.myweb.snsboard.dto.SnsBoardRequestDTO;
+import com.spring.myweb.snsboard.dto.SnsBoardResponseDTO;
 import com.spring.myweb.snsboard.entity.SnsBoard;
 import com.spring.myweb.snsboard.mapper.ISnsBoardMapper;
 
@@ -25,7 +26,7 @@ public class SnsBoardService {
 	
 	private final ISnsBoardMapper mapper;
 
-	public void insert(SnsBoardRequsetDTO dto) {
+	public void insert(SnsBoardRequestDTO dto) {
 				
 		
 		
@@ -97,18 +98,42 @@ public class SnsBoardService {
         
 	}
 
-	public List<SnsboardResponseDTO> getList(int page) {
-		List<SnsboardResponseDTO> dtoList = new ArrayList<>();
+	public List<SnsBoardResponseDTO> getList(int page) {
+		List<SnsBoardResponseDTO> dtoList = new ArrayList<>();
 		List<SnsBoard> list = mapper.getList(Page.builder()
 									.pageNo(page)
 									.amount(3)
 									.build());
 		
 		for(SnsBoard board : list) {
-			dtoList.add(new SnsboardResponseDTO(board));
+			dtoList.add(new SnsBoardResponseDTO(board));
 		}
 		
 		return dtoList;
+		
+	}
+
+	public SnsBoardResponseDTO getDetail(int bno) {
+	System.out.println(bno);
+	return new SnsBoardResponseDTO(mapper.getDetail(bno));
+		
+	}
+
+	public void delete(int bno) {
+		
+		mapper.delete(bno);
+		
+	}
+
+	public String searchLike(Map<String, String> params) {
+		if(mapper.searchLike(params) == 0) {
+			mapper.createLike(params);
+			return "like";
+		} else {
+			mapper.deleteLike(params);
+			return "delete";
+		}
+		
 		
 	}
 

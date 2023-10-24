@@ -11,7 +11,7 @@ import lombok.ToString;
 
 @Getter @ToString @EqualsAndHashCode
 
-public class SnsboardResponseDTO {
+public class SnsBoardResponseDTO {
 
 	private int bno;
 	private String writer;
@@ -21,7 +21,7 @@ public class SnsboardResponseDTO {
 	private String content;
 	private String regDate;
 
-	public SnsboardResponseDTO(SnsBoard board) {
+	public SnsBoardResponseDTO(SnsBoard board) {
 		this.bno = board.getBno();
 		this.writer = board.getWriter();
 		this.uploadPath = board.getUploadPath();

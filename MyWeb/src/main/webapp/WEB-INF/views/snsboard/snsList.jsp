@@ -5,6 +5,8 @@
 
 <head>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+
 <style type="text/css">
 section {
 	margin-top: 70px;
@@ -315,6 +317,7 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 				alert('이미지 파일만 첨부할 수 있습니다. (jpg,png,jpeg,bmp)')
 				return;
 			}
+
 			/*
 			비동기 방식 요청에서 from을 생성해서 보내주는 방법
 
@@ -348,7 +351,7 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
                 method: 'post',
                 body: formData
             })
-			//응답 데이터는 text로 전달됩니다. (uploadSuccess)
+		//응답 데이터는 text로 전달됩니다. (uploadSuccess)
 		//file input 내용을 비워 주시고, 글 영역 비워 주시고,
 		//class 이름이 fileDiv(미리보기)영역을 감춰주세요. -> display 속성을 none으로.
 		.then(res => res.text())
@@ -366,10 +369,16 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 	//글 목록 함수 선언
 	let str = '';
 	let page = 1;
+	let isFinish = false;
+	let reqStatus = false;
+
 	const $contentDiv = document.getElementById('contentDiv');
+
 	getList(1, true);
+
 	function getList(page, reset){
 		str = '';
+		isFinish = false;
 		console.log('page: ' , page);
 		console.log('reset: ' , reset);
 
@@ -381,11 +390,18 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 				console.log(list);
 				console.log(list.length);
 
-				if(reset){
-					while($contentDiv.firstChild){
-						$contentDiv.firstChild.remove();
+				if(list.length <= 0){
+					isFinish = true; //목록이 0이면 진행할 필요 없음
+					reqStatus = true;
+					return;
+				} 
+
+				if (reset) {
+						while ($contentDiv.firstChild) {
+							$contentDiv.firstChild.remove();
+						}
+						page = 1;
 					}
-					page = 1;
 
 					for(board of list){
 						str += 
@@ -415,7 +431,7 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
                             <img src="${pageContext.request.contextPath}/img/icon.jpg"> <span>522</span>
                         </div>
                         <div class="link-inner">
-                            <a href="##"><i class="glyphicon glyphicon-thumbs-up"></i>좋아요</a>
+                            <a id="likeBtn" href="` + board.bno + `"><img src="${pageContext.request.contextPath}/img/like1.png" width="20px" height="20px" />좋아요</a>
                             <a data-bno="` + board.bno + `" id="comment" href="` + board.bno + `"><i class="glyphicon glyphicon-comment"></i>댓글달기</a>
                             <a id="delBtn" href="` + board.bno + `"><i class="glyphicon glyphicon-remove"></i>삭제하기</a>
                         </div>`;
@@ -423,24 +439,27 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 					}
 
 					if(!reset){
-						$contentDiv.insertAdjacentHTML('beforeend'. str);
+						$contentDiv.insertAdjacentHTML('beforeend', str);
 					} else{
 						$contentDiv.insertAdjacentHTML('afterbegin', str);
 					}
 
-				}
+									
+				isFinish = true;
 			}); //end fetch
 	} // end getList
 
 
-
+	
 	$contentDiv.addEventListener('click',e=>{
 			e.preventDefault();
 			if(!e.target.matches('.image-inner img')
 				&& !e.target.matches('.title #download')
 				&& !e.target.matches('.link-inner #comment')
+				&& !e.target.matches('.link-inner #delBtn')
+
 			){
-				console.log('여기는 이벤트 대상이 아닙니다.');
+				
 				return;
 			}
 			//다운로드 처리
@@ -451,29 +470,147 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 				return;
 			}
 
+			//삭제처리
+			if(e.target.matches('.link-inner #delBtn')){
+
+        	//비동기 방식으로 삭제를 진행해 주세요.
+        	//서버쪽에서 권한을 확인 해 주세요. (작성자와 로그인 중인 사용자의 id를 비교해서 일치하는지의 여부)
+        	//일치하지 않는다면 문자열 "noAuth" 리턴, 삭제 완료하면 "success" 리턴
+        	//url: /snsboard/글번호 method: DELETE
+				
+				const bno = e.target.getAttribute('href');
+
+				fetch('${pageContext.request.contextPath}/snsboard/' + bno, {
+					method: 'delete'
+				})
+				.then(res => {
+					console.log(res.status) // ResponseEntity를 사용하면 전달되는 데이터가 없다.
+											// 응답상태 코드로 확인하는 방법
+					if(res.status === 401) {
+						alert('권한이 없습니다.');
+					}else {
+						alert('게시물이 정상적으로 삭제되었습니다.');
+						getList(1, true);
+					}
+				})
+				// .then(res => res.text())
+				// .then(result => {
+				// 	if(result === 'noAuth') alert('권한이 없습니다.');
+				// 	else if(result === 'fail') alert('관리자에게 문의하세요');
+				// 	else {
+				// 		alert('게시물이 정상적으로 삭제되었습니다.');
+				// 		getList(1, true); //삭제가 반영된 새로운 글 목록 보여주기.
+				// 	}
+				// });
+
+				return;
+			}
+
+						
 			// 글 번호 얻기
 
 			const bno = e.target.dataset.bno;
-			console.log('bno : '+bno);
+			console.log('bno : ' + bno);
 
 			//fetch함수를 사용하여 글 상세 보기 요청을 비동기 식으로 요청하세요.
             // url: /snsboard/content/글번호 -> GET
             //전달 받은 글 내용을 미리 준비한 모달창에 뿌릴 겁니다.(모달 위에 있어요.)
             //값을 제 위치에 배치하시고 모달을 열어 주세요. 
             //(부트스트랩 모달이기 때문에 jQuery로 열어주세요.)
-			fetch('${pageContext.request.contextPath}/snsboard/content/' + bno)
-			.then(res => json())
+			fetch('${pageContext.request.contextPath}/snsboard/content/' + bno )
+			.then(res => res.json())
 			.then(data => {
-				
 				console.log(data);
-				document.querySelector('.modal-content').textContent = data.content;
-				document.querySelector('.modal-img img').src = '${pageContext.request.contextPath}/snsboard/display/' + data.fileLoca + '/' + data.fileName;
-				document.getElementById('snsWriter').innerHTML = data.writer
-				$('#snsModal').modal('show');
+				const src = '${pageContext.request.contextPath}/snsboard/display/' + data.fileLoca + '/' + data.fileName;
+                document.getElementById('snsImg').setAttribute('src', src);
+                document.getElementById('snsWriter').textContent = data.writer;
+                document.getElementById('snsRegdate').textContent = data.regDate;
+                document.getElementById('snsContent').textContent = data.content;
+				});
 
-			})
+				$('#snsModal').modal('show');
 			
 		});
+
+		
+		/*
+        쓰로틀링 - 일정한 간격으로 함수를 실행.
+        쓰로틀링은 사용자가 이벤트를 몇번이나 발생시키든, 일정한 간격으로
+        한 번만 실행하도록 하는 기법.
+        마우스 움직임, 스크롤 이벤트 같은 짧은 주기로 자주 발생하는 경우에 사용하는 기법 (lodash 라이브러리를 이용해 구현)
+        */
+
+		const handleScroll = _.throttle(() => {
+			console.log('throttle activate!');
+			const scrollPosition = window.pageYOffset;
+			const height = document.body.offsetHeight;
+			const windowHeight = window.innerHeight;
+
+			if(isFinish) {
+				if(scrollPosition + windowHeight >= height * 0.9) {
+					console.log('next page call!');
+					getList(++page, false);
+				}
+			}
+
+
+		}, 1000);
+
+
+		//브라우저 창에서 스크롤이 발생할 때마다 이벤트 발생.
+		window.addEventListener('scroll', () => {
+			if(!reqStatus) handleScroll();
+		});
+
+		//좋아요 기능 구현
+		$contentDiv.addEventListener('click', e => {
+			e.preventDefault();
+			if(!e.target.matches('#likeBtn')) return;
+			console.log('좋아요 버튼이 클릭됨!');
+
+			const id = '${login}'; // 현재 로그인 중인 사용자의 아이디.
+			if(id === '') {
+				alert('로그인이 필요합니다.');
+				return;
+			}
+
+			const bno = e.target.getAttribute('href'); //좋아요를 누를 글 번호
+
+			fetch('${pageContext.request.contextPath}/snsboard/like', {
+				method: 'post',
+				headers: {
+					'Content-Type' : 'application/json'
+				},
+				body: JSON.stringify({
+					'userId' : id,
+					'bno' : bno
+				})
+			})
+			.then(res => res.text())
+			.then(result => {
+				console.log('result', result);
+				if(result ==='like'){
+                    e.target.firstElementChild.setAttribute('src','${pageContext.request.contextPath}/img/like2.png');
+                    e.target.style.color ='blue';
+                    const $cnt =e.target.parentNode.previousElementSibling.children[1];
+                    $cnt.textContent = Number($cnt.textContent)+1;
+
+                }else{
+                    e.target.firstElementChild.setAttribute('src','${pageContext.request.contextPath}/img/like1.png');
+                    e.target.style.color ='black';
+                    const $cnt =e.target.parentNode.previousElementSibling.children[1];
+                    $cnt.textContent = Number($cnt.textContent)-1;
+                }
+			})
+
+		})
+
+
+
+
+
+
+
 		
 		//자바 스크립트 파일 미리보기 기능
         function readURL(input) {

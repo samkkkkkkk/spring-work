@@ -14,7 +14,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class SnsBoardRequsetDTO {
+public class SnsBoardRequestDTO {
 	
 	private String content;
 	private String writer;
