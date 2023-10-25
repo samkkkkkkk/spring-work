@@ -152,26 +152,28 @@ public class SnsBoardController {
 	}
 	
 	@DeleteMapping("/{bno}")
-	public ResponseEntity<?> delete(@PathVariable int bno, HttpSession session) {
-		
-		String id = (String) session.getAttribute("login"); 
-		SnsBoardResponseDTO dto = service.getDetail(bno);
-		if(id == null || id.equals(dto.getWriter())) {
-			//return "noAuth";
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-		
-		service.delete(bno);
-		//글이 삭제되었다면 더 이상 이미지도 조재할 필요가 없으므로
-		//이미지도 함께 삭제해 주셔야 합니다.
-		//File 객체 생성 -> 생성자에 지우고자 하는 파일의 경로 지정
-		//메서드 delete() -> return type boolean. 삭제 성공 시 true, 실패 시 false
-		
-		File file = new File(dto.getUploadPath() + dto.getFileLoca() + "/" + dto.getFileName());
-		return file.delete() ?  ResponseEntity.status(HttpStatus.OK).build() 
-				: ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		// 성공하면 응답상태 코드 200, 실패하면 internal 서버 에러가 난다.
-	}
+    public ResponseEntity<?> delete(@PathVariable int bno, HttpSession session) {
+        
+        String id = (String) session.getAttribute("login"); 
+        SnsBoardResponseDTO dto = service.getDetail(bno);
+        
+        if(id == null || !id.equals(dto.getWriter())) {
+            //return "noAuth";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        service.delete(bno);
+        //글이 삭제되었다면 더 이상 이미지도 조재할 필요가 없으므로
+        //이미지도 함께 삭제해 주셔야 합니다.
+        //File 객체 생성 -> 생성자에 지우고자 하는 파일의 경로 지정
+        //메서드 delete() -> return type boolean. 삭제 성공 시 true, 실패 시 false
+        
+        File file = new File(dto.getUploadPath()+"/" + dto.getFileLoca() + "/" + dto.getFileName());
+        return file.delete() ?  ResponseEntity.status(HttpStatus.OK).build() 
+                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // 성공하면 응답상태 코드 200, 실패하면 internal 서버 에러가 난다.
+    }
+    
 	
 	
 	//좋아요 버튼 클릭 처리
@@ -182,6 +184,14 @@ public class SnsBoardController {
 		return service.searchLike(params);
 				
 	}
+	
+	//회원이 글 목록으로 진입 시 좋아요 게시물 리스트 체크
+	@GetMapping("/likeList/{userId}")
+	public List<Integer> likeList(@PathVariable String userId) {
+		log.info("/snsboard/likeList: GET, userId: {}", userId);
+		return service.likeList(userId);
+	}
+	
 	
 	
 	

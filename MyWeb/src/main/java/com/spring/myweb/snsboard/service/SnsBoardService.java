@@ -114,8 +114,8 @@ public class SnsBoardService {
 	}
 
 	public SnsBoardResponseDTO getDetail(int bno) {
-	System.out.println(bno);
-	return new SnsBoardResponseDTO(mapper.getDetail(bno));
+		System.out.println(bno);
+		return new SnsBoardResponseDTO(mapper.getDetail(bno));
 		
 	}
 
@@ -134,6 +134,11 @@ public class SnsBoardService {
 			return "delete";
 		}
 		
+		
+	}
+
+	public List<Integer> likeList(String userId) {
+		return mapper.likeList(userId);
 		
 	}
 

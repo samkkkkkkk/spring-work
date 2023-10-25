@@ -373,10 +373,44 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 	let reqStatus = false;
 
 	const $contentDiv = document.getElementById('contentDiv');
+	getLikeList(1, true);
+	
+	//지금 게시판에 들어온 회원의 좋아요 게시물 목록을 받아오는 함수.
+	function getLikeList(page, reset) {
+		const userId = '${login}';
+		console.log('userId: ', userId);
+		/*
+		특정 데이터를 브라우저가 제공하는 공간에 저장할 수 있습니다.
+		localStorage, sessionStorage -> 수명의 차이점이 있습니다.
+		localStroage: 브라우저가 종료되더라도 데이터는 유지됩니다.
+					  브라우저 탭이 여러 개 존재하더라도 데이터가 공유됩니다.
+		sessionStorage: 브라우저가 종료되면 데이터가 소멸됩니다.
+					브라우저 탭 별로 데이터가 저장되기 때문에 공유되지 않습니다.
+		*/		
+		
 
-	getList(1, true);
 
-	function getList(page, reset){
+		if(userId !== '') {
+			if(sessionStorage.getItem('likeList')) {
+				console.log('sessionStorage에 list 포함');
+				getList(page, reset, sessionStorage.getItem('likeList'));
+				return;
+			}
+			fetch('${pageContext.request.contextPath}/snsboard/likeList/' + userId)
+			.then(res => res.json())
+			.then(list => {
+				console.log('좋아요 글 목록 받아옴!: ', list);
+				sessionStorage.setItem('likeList', list);
+				getList(page, reset, list); //getLikeList가 수행이 끝난 이후에 실행되게 하기 위해서 .then 이후에 호출
+			});
+		} else {
+			getList(page, reset, null);
+		}
+	}
+
+
+
+	function getList(page, reset, likeList) { //자바스크립트는 함수의 이름을 매개변수로 받을 수 있다.
 		str = '';
 		isFinish = false;
 		console.log('page: ' , page);
@@ -428,10 +462,20 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
                         </div>
                         <div class="like-inner">
                             <!--좋아요-->
-                            <img src="${pageContext.request.contextPath}/img/icon.jpg"> <span>522</span>
+                            <img src="${pageContext.request.contextPath}/img/icon.jpg"> <span>` +  board.likeCnt + `</span>
                         </div>
-                        <div class="link-inner">
-                            <a id="likeBtn" href="` + board.bno + `"><img src="${pageContext.request.contextPath}/img/like1.png" width="20px" height="20px" />좋아요</a>
+                        <div class="link-inner">`;
+							if(likeList) {
+								if(likeList.includes(board.bno)) { //likeList에 글번호가 포함되어 있는지 확인
+									str += `<a id="likeBtn" href="` + board.bno + `"><img src="${pageContext.request.contextPath}/img/like2.png" width="20px" height="20px" />좋아요</a>`
+								} else {
+									str += `<a id="likeBtn" href="` + board.bno + `"><img src="${pageContext.request.contextPath}/img/like1.png" width="20px" height="20px" />좋아요</a>`
+								}
+							} else {
+								str +=  `<a id="likeBtn" href="` + board.bno + `"><img src="${pageContext.request.contextPath}/img/like1.png" width="20px" height="20px" />좋아요</a>`
+
+							}
+							str += `
                             <a data-bno="` + board.bno + `" id="comment" href="` + board.bno + `"><i class="glyphicon glyphicon-comment"></i>댓글달기</a>
                             <a id="delBtn" href="` + board.bno + `"><i class="glyphicon glyphicon-remove"></i>삭제하기</a>
                         </div>`;
@@ -452,59 +496,59 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 
 	
 	$contentDiv.addEventListener('click',e=>{
-			e.preventDefault();
-			if(!e.target.matches('.image-inner img')
-				&& !e.target.matches('.title #download')
-				&& !e.target.matches('.link-inner #comment')
-				&& !e.target.matches('.link-inner #delBtn')
+            e.preventDefault();
+            if(!e.target.matches('.image-inner img')
+                && !e.target.matches('.title #download')
+                && !e.target.matches('.link-inner #comment')
+                && !e.target.matches('.link-inner #delBtn')
 
-			){
-				
-				return;
-			}
-			//다운로드 처리
-			if(e.target.matches('.title #download')){
-				if(confirm('다운로드를 진행하시겠습니까?')){
-					location.href= e.target.getAttribute('href');
-				}
-				return;
-			}
+            ){
+                
+                return;
+            }
+            //다운로드 처리
+            if(e.target.matches('.title #download')){
+                if(confirm('다운로드를 진행하시겠습니까?')){
+                    location.href= e.target.getAttribute('href');
+                }
+                return;
+            }
 
-			//삭제처리
-			if(e.target.matches('.link-inner #delBtn')){
+			//삭제 처리
+            if(e.target.matches('.link-inner #delBtn')){
+                //삭제 처리
+                //삭제하기 링크를 클릭했을 때 이벤트를 발생 시켜서
+                //비동기 방식으로 삭제를 진행해 주세요. (삭제 버튼은 여러 개 입니다!)
+                //서버쪽에서 권한을 확인 해 주세요. (작성자와 로그인 중인 사용자의 id를 비교해서 일치하는지의 여부)
+                //일치하지 않는다면 문자열 "noAuth" 리턴, 삭제 완료하면 "success" 리턴
+                //url: /snsboard/글번호 method: DELETE
+                const bno = e.target.getAttribute('href');
+                fetch('${pageContext.request.contextPath}/snsboard/' + bno, {
+                    method : 'delete'
+                })
+                .then(res => {
+                    console.log(res.status);
+                    if(res.status === 401){
+                        alert('권한이 없습니다.');
+                    }else if(res.status === 500) {
+                        alert('관리자에게 문의하세요.');
+                    }else{
+                        alert('게시물이 정상적으로 삭제되었습니다.');
+                        getList(1, true); //삭제가 반영된 새로운 글 목록 보여주기.
+                    }
+                });
+                //.then(res => res.text())
+                //.then(result => {
+                //     if(result === 'noAuth') alert('권한이 없습니다.');
+                //     else if(result === 'fail') alert('관리자에게 문의하세요!');
+                //     else{
+                //         alert('게시글이 정상적으로 삭제되었습니다.');
+                //         getList(1, true); //삭제가 반영된 새로운 글 목록 보여주기.
+                //     }
+                // });
 
-        	//비동기 방식으로 삭제를 진행해 주세요.
-        	//서버쪽에서 권한을 확인 해 주세요. (작성자와 로그인 중인 사용자의 id를 비교해서 일치하는지의 여부)
-        	//일치하지 않는다면 문자열 "noAuth" 리턴, 삭제 완료하면 "success" 리턴
-        	//url: /snsboard/글번호 method: DELETE
-				
-				const bno = e.target.getAttribute('href');
-
-				fetch('${pageContext.request.contextPath}/snsboard/' + bno, {
-					method: 'delete'
-				})
-				.then(res => {
-					console.log(res.status) // ResponseEntity를 사용하면 전달되는 데이터가 없다.
-											// 응답상태 코드로 확인하는 방법
-					if(res.status === 401) {
-						alert('권한이 없습니다.');
-					}else {
-						alert('게시물이 정상적으로 삭제되었습니다.');
-						getList(1, true);
-					}
-				})
-				// .then(res => res.text())
-				// .then(result => {
-				// 	if(result === 'noAuth') alert('권한이 없습니다.');
-				// 	else if(result === 'fail') alert('관리자에게 문의하세요');
-				// 	else {
-				// 		alert('게시물이 정상적으로 삭제되었습니다.');
-				// 		getList(1, true); //삭제가 반영된 새로운 글 목록 보여주기.
-				// 	}
-				// });
-
-				return;
-			}
+                return;
+            }
 
 						
 			// 글 번호 얻기
@@ -541,7 +585,6 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
         */
 
 		const handleScroll = _.throttle(() => {
-			console.log('throttle activate!');
 			const scrollPosition = window.pageYOffset;
 			const height = document.body.offsetHeight;
 			const windowHeight = window.innerHeight;
@@ -549,7 +592,7 @@ ul.nav li.drophover:hover>ul.dropdown-menu {
 			if(isFinish) {
 				if(scrollPosition + windowHeight >= height * 0.9) {
 					console.log('next page call!');
-					getList(++page, false);
+					getLikeList(++page, false);
 				}
 			}
 
